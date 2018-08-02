@@ -100,11 +100,24 @@ def addModToGlobal(data, path):
         for category in GLOBAL_JSON['mechs']:
             if category['name'] == CATEGORY_NAME:
                 category['list'].append(pathToStandard(path))
+                break
 
-        print(categoryIndex)
-        print(GLOBAL_JSON['mechs'])
-    # elif expression:
-    #     pass
+    elif data['archetype'] == "PILOT":
+        # Append to Pilots
+        GLOBAL_JSON['pilots'].append(pathToStandard(path))
+
+    elif "_WEAPON" in data['archetype']:
+        # Decide category based on title
+        if "aux" in path:
+            GLOBAL_JSON['aux_weapons'].append(pathToStandard(path))
+        elif "main" in path:
+            GLOBAL_JSON['main_weapons'].append(pathToStandard(path))
+        elif "turret" in path:
+            GLOBAL_JSON['turret_weapons'].append(pathToStandard(path))
+        elif "heavy" in path:
+            GLOBAL_JSON['heavy_weapons'].append(pathToStandard(path))
+        elif "small" in path:
+            GLOBAL_JSON['small_weapons'].append(pathToStandard(path))
 
 # Converts a local path from the mod packer folder to the Brigador standard
 def pathToStandard(path):
