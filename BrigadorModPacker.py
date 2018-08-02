@@ -3,6 +3,7 @@
 
 # Imports
 import os
+import json
 
 # Main Thread
 def main():
@@ -20,16 +21,43 @@ def main():
             # Loop through all files in directory
             for filename in filenames:
                 # Formulate path
-                path = (dirpath+"/"+filename).replace("\\","/").replace("//","/")
+                path = (dirpath+"/"+filename).replace("\\", "/").replace("//", "/")
 
                 # Only select json files
                 if os.fsdecode(filename).endswith(".json"):
                     # Add to mod file directory list
                     modDirs.append(path)
 
-    # Report on count
+    # Report
     print(str(len(modDirs))+" mod files found")
-    print(modDirs)
+    print("\nLocating global.json...")
+
+    # Find global.json
+    gblDir = "../../data/global.json"
+    if os.path.isfile(gblDir):
+        print("global.json found")
+        gblFile = open(gblDir,"r")
+    else:
+        print("Could not find global.json. Exiting.")
+        exit()
+
+    # Report
+    print("Parsing mod files...")
+
+    # Loop through all mod files
+    for path in modDirs:
+        # Open and load json
+        print(path)
+        with open(path, "r") as jsonFile:
+            try:
+                # Parse json data
+                data = json.load(jsonFile)
+                print(data['archetype'])
+            except Exception:
+                print(path+" is not a valid .json file")
+
+    # Close global.json
+    gblFile.close()
 
 # Begin Operation
 if __name__ == '__main__':
