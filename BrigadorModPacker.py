@@ -21,7 +21,21 @@ def main():
     # Print welcome
     print("[ BRIGADOR MOD PACKER ]")
 
-    # Alert User
+    # Report
+    print("\nBacking up global.json...")
+
+    # Define global.json directory
+    gblDir = "../../data/global.json"
+
+    # Open and save to backup
+    with open(gblDir, "r", encoding = "Latin-1") as readFile:
+        with open(gblDir+".BAK", "w", encoding = "Latin-1") as writeFile:
+            writeFile.write(readFile.read())
+
+    # Report
+    print("global.json has been backed up")
+
+    # Report
     print("\nCounting Mod Files...")
 
     # Count Mods
@@ -45,11 +59,19 @@ def main():
     print("\nLocating global.json...")
 
     # Find global.json
-    gblDir = "../../data/global.json"
     if os.path.isfile(gblDir):
+        # Report
         print("global.json found")
-        gblFile = open(gblDir,"r",encoding="latin-1")
-        GLOBAL_JSON = json.load(gblFile, encoding="latin-1")
+
+        # Open file and load json data
+        if os.path.isfile(gblDir+".BAK"):
+            # Use previously backed up file
+            gblFile = open(gblDir+".BAK","r",encoding="latin-1")
+            GLOBAL_JSON = json.load(gblFile, encoding="latin-1")
+        else:
+            # Use original file
+            gblFile = open(gblDir,"r",encoding="latin-1")
+            GLOBAL_JSON = json.load(gblFile, encoding="latin-1")
     else:
         print("Could not find global.json. Exiting.")
         exit()
