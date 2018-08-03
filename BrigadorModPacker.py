@@ -28,12 +28,17 @@ def main():
     gblDir = "../../data/global.json"
 
     # Open and save to backup
-    with open(gblDir, "r", encoding = "Latin-1") as readFile:
-        with open(gblDir+".BAK", "w", encoding = "Latin-1") as writeFile:
-            writeFile.write(readFile.read())
+    if not os.path.isfile(gblDir+".BAK"):
+        with open(gblDir, "r", encoding = "Latin-1") as readFile:
+            with open(gblDir+".BAK", "w", encoding = "Latin-1") as writeFile:
+                writeFile.write(readFile.read())
 
-    # Report
-    print("global.json has been backed up")
+        # Report
+        print("global.json has been backed up")
+
+    else:
+        # Report
+        print("global.json is already backed up")
 
     # Report
     print("\nCounting Mod Files...")
