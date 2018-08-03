@@ -4,6 +4,7 @@
 # Imports
 import os
 import json
+from subprocess import Popen
 
 # Config
 # Category Name for any vehicle mods to be placed under
@@ -87,6 +88,36 @@ def main():
 
     # Report
     print("global.json has been saved")
+
+    # Ask for input
+    runCompile = "tempHolder"
+    valid = False
+    confirm = False
+    while(not valid):
+        # Prompt user
+        print("\nShould the mod compiler be run?")
+        runCompile = input("[y]es or [n]o: ")
+
+        # Chec for valid
+        if runCompile.lower() == "y" or runCompile.lower() == "yes":
+            valid = True
+            confirm = True
+        elif runCompile.lower() == "n" or runCompile.lower() == "no":
+            valid = True
+            confirm = False
+
+    # React to choice
+    if(confirm):
+        # Run compiler
+        # Report
+        print("\nRunning compiler...")
+
+        # Run .bat
+        process = Popen(os.path.join(os.path.dirname(__file__),"../../../genpack.bat"), cwd=r"../../../")
+        stdout, stderr = process.communicate()
+
+    # Print exit message
+    print("\nExiting.")
 
 # Adds the given json mod to global
 # Currently Supports: All Vehicles, All Weapons, Pilots, Specials
