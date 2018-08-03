@@ -76,10 +76,17 @@ def main():
     # Close Global
     gblFile.close()
 
-    # ..
-    print(GLOBAL_JSON)
+    # Open global.json as write
+    gblWriteFile = open(gblDir,"w")
 
-    
+    # Write to file
+    json.dump(GLOBAL_JSON,gblWriteFile)
+
+    # Close global.json
+    gblWriteFile.close()
+
+    # Report
+    print("global.json has been saved")
 
 # Adds the given json mod to global
 # Currently Supports: All Vehicles, All Weapons, Pilots, Specials
