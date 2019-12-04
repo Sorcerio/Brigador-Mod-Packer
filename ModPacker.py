@@ -5,13 +5,12 @@
 import os
 import json
 import subprocess
-import configparser
 import generalUtilities as gu
 
 # Globals
 CATEGORY_NAME = "VARIOUS | SNC Requisitions"
 BACKUP_EXT = ".BAK"
-SETTINGS_INI = "settings.ini"
+SETTINGS_FILE = "settings.json"
 SETTINGS = None
 GLOBAL_DIR = "../../data/global.json"
 GLOBAL_JSON = {}
@@ -24,17 +23,15 @@ def main():
     global MODS_AVAILABLE
     global GLOBAL_DIR
     global BACKUP_EXT
-    global SETTINGS_INI
+    global SETTINGS_FILE
     global SETTINGS
 
     # Check if a global json backup already exists
     backupGlobalJson()
 
     # Load the settings
-    SETTINGS = configparser.ConfigParser()
-    SETTINGS.read(SETTINGS_INI)
-
-    # TODO: Loop through enabled mods
+    with open(SETTINGS_FILE, "r") as sFile:
+        SETTINGS = json.load(sFile)
 
     # Populate the avalible mods list
     for fileName in os.listdir("../"):
@@ -88,7 +85,7 @@ def modSelectionOptions(choice):
     global MODS_AVAILABLE
     global MODS_SELECTED
     global SETTINGS
-    global SETTINGS_INI
+    global SETTINGS_FILE
 
     # Make sure the choice is within bounds
     choiceInt = int(choice)
@@ -134,8 +131,8 @@ def modSelectMenu():
     gu.checkboxMenu("Mod Selection", modDisplay, "Confirm Selections", modSelectionOptions)
 
     # Save the settings file
-    with open(SETTINGS_INI, "w") as configFile:
-        SETTINGS.write(configFile)
+    with open(SETTINGS_FILE, "w") as sFile:
+        json.dump(SETTINGS, sFile)
 
     # Print the success message
     print("\n"+str(len(MODS_SELECTED))+" mods have been selected.")
@@ -298,7 +295,7 @@ def startBrigador():
     subprocess.call(["../../../brigador.exe"], cwd=r"../../../")
 
     # Check if the python should close
-    if(not SETTINGS['Settings'].getboolean("remainOpen")):
+    if(not SETTINGS['Settings'].getboolean("remainopen")):
         exit()
 
 # Begin Operation
