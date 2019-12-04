@@ -47,7 +47,7 @@ def main():
             MODS_AVAILABLE.append(fileName)
 
     # Show the main menu
-    mainOptions = ["Select Mods", "Play with Selected Mods", "Play without Mods", "Options"]
+    mainOptions = ["Select Mods", "Play with Selected Mods", "Play without Mods", "Utilities", "Options"]
     gu.textMenu("Brigador Mod Packer", mainOptions, "Quit", mainMenuOptions)
 
 # Menu Triggers
@@ -88,8 +88,12 @@ def mainMenuOptions(choice):
         # Populate the selected mods list again
         populateModsFromSettings()
     elif choice == "3":
+        # Utilities menu
+        # Open the utilities menu
+        utilitiesMenu()
+    elif choice == "4":
         # Options menu
-        print("Feature TBD")
+        print("Options TBD")
 
 # Triggers for the mod selection menu's options
 def modSelectionOptions(choice):
@@ -114,6 +118,10 @@ def modSelectionOptions(choice):
             # Mod is not in the list, add it
             SETTINGS['Mods'].append(modFile)
             MODS_SELECTED.append(modFile)
+
+# Triggers for the utilities menu's options
+def utilitiesMenuOptions(choice):
+    pass
 
 # Functions
 # Makes a backup of the global json file if one does not exist yet
@@ -365,6 +373,12 @@ def createSettingsFile(force = False):
         with open(SETTINGS_FILE, "w+") as settingsFile:
             # Dump the settings string to the file
             json.dump(settingsString, settingsFile)
+
+# Handles and shows the utilities menu
+def utilitiesMenu():
+    # Show the utilities menu
+    choices = ["Generate Mod Details for Mod"]
+    gu.textMenu("Utilities", choices, "Back", utilitiesMenuOptions)
 
 # Begin Operation
 if __name__ == '__main__':
