@@ -11,7 +11,7 @@ import generalUtilities as gu
 CATEGORY_NAME = "VARIOUS | SNC Requisitions"
 BACKUP_EXT = ".BAK"
 GLOBAL_DIR = "../../data/global.json"
-# GLOBAL_JSON = {}
+GLOBAL_JSON = {}
 MODS_AVAILABLE = []
 MODS_SELECTED = []
 
@@ -99,7 +99,6 @@ def packageMods():
     global GLOBAL_DIR
 
     # Look for a global json file
-    globalJson = ""
     if os.path.isfile(GLOBAL_DIR):
         # Check if a global json backup already exists
         backupGlobalJson()
@@ -108,7 +107,7 @@ def packageMods():
         globalFile = open(GLOBAL_DIR+BACKUP_EXT, "r", encoding="latin-1")
 
         # Assign the data to the global json
-        globalJson = json.load(globalFile, encoding="latin-1")
+        GLOBAL_JSON = json.load(globalFile, encoding="latin-1")
 
         # Close the backup global json file
         globalFile.close()
@@ -117,7 +116,80 @@ def packageMods():
         print("Somehow you don't have a global.json file. You should fix that ASAP.")
         exit()
     
-    print(globalJson)
+    print(GLOBAL_JSON)
+
+# Adds the given json mod to global
+# Currently Supports: All Vehicles, All Weapons, Pilots, Specials
+def addModToGlobal(data, path):
+    # Watch out for archetype failures
+    try:
+        # Check if the data is a Mech
+        if data['archetype'] == "MECH":
+            # Look for mod packer entry
+            hasCategory = False
+            categoryIndex = -1
+            tick = 0
+            for item in GLOBAL_JSON['mechs']:
+                if item['name'] == CATEGORY_NAME:
+                    hasCategory = True
+                    categoryIndex = tick-1
+                    break
+
+                # Iterate
+                tick += 1
+            
+            # Add category if needed
+            if not hasCategory:
+                # Get index that will be added
+                categoryIndex = len(GLOBAL_JSON['mechs'])
+
+                # Add to category
+                GLOBAL_JSON['mechs'].append({'name' : CATEGORY_NAME, 'list' : []})
+
+            # Add Mod link to category
+            for category in GLOBAL_JSON['mechs']:
+                if category['name'] == CATEGORY_NAME:
+                    category['list'].append(pathToStandard(path))
+                    break
+
+        # Check if the data is a Pilot
+        elif data['archetype'] == "PILOT":
+            # Append to Pilots
+            GLOBAL_JSON['pilots'].append(pathToStandard(path))
+
+        # Check if the data is a weapon
+        elif "_WEAPON" in data['archetype']:
+            # Decide category based on title
+            if "aux" in path:
+                GLOBAL_JSON['aux_weapons'].append(pathToStandard(path))
+            elif "main" in path:
+                GLOBAL_JSON['main_weapons'].append(pathToStandard(path))
+            elif "turret" in path:
+                GLOBAL_JSON['turret_weapons'].append(pathToStandard(path))
+            elif "heavy" in path:
+                GLOBAL_JSON['heavy_weapons'].append(pathToStandard(path))
+            elif "small" in path:
+                GLOBAL_JSON['small_weapons'].append(pathToStandard(path))
+            elif "special" in path:
+                GLOBAL_JSON['special_abilities'].append(pathToStandard(path))
+
+        # Check if the data is a mission
+        elif "MISSION" in data['archetype']:
+            # Append to Missions
+            GLOBAL_JSON['missions'].append(pathToStandard(path))
+
+        # Check if the data is an overmap
+        elif "OVERMAP" in data['archetype']:
+            # Append to Overmap Paths
+            GLOBAL_JSON['overmap_paths'].append(pathToStandard(path))
+
+    except KeyError as e:
+        print(path+" is not an archetype file, ignoring")
+
+# Converts a local path from the mod packer folder to the Brigador standard
+def pathToStandard(path):
+    # Replace and send
+    return path.replace("../","assets/_modkit/")
 
 # Begin Operation
 if __name__ == '__main__':

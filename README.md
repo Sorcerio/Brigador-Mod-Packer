@@ -9,6 +9,7 @@ A tool for packing formatted Brigador Mods into the game written in Python and u
 ## `_modkit` File Compatible Mods
 A `_modkit` File Compatible Mod is a mod that has been developed with a link structure that allows it to be inside the Brigador `_modkit` file and correctly link to it's accompanying assets.
 If you are unsure if your mod is a `_modkit` File Compatible Mod, ask the person who developed the mod or ask on the [Brigador Discord Channel](https://discord.gg/z4Egp3A) where you can find more content for Brigador!
+Currently All Vehicles, All Weapons, Pilots, and Specials are supported in the system.
 
 ## Where to Download Mods
 * [Brigador Discord Channel](https://discord.gg/z4Egp3A)
