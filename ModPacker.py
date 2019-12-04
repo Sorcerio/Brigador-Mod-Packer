@@ -4,7 +4,8 @@
 # Imports
 import os
 import json
-from subprocess import Popen
+# from subprocess import Popen
+import subprocess
 import generalUtilities as gu
 
 # Globals
@@ -123,7 +124,6 @@ def packageMods():
         exit()
 
     # Collect the json files from the selected mods
-    modPaths = []
     for mod in MODS_SELECTED:
         # Loop through the files in each mod folder
         for dirpath, dirnames, filenames in os.walk("../"+mod):
@@ -235,16 +235,13 @@ def pathToStandard(path):
 # Compiles the current global json file so the mods it contains can be used in game
 def compileGlobalJson():
     # Report that the compiler will open
-    print("Opening the compiler.")
+    print("\nOpening the compiler. Please wait for it to complete, this may take a while.")
 
-    # Prepare the compiler process
-    process = Popen(os.path.join(os.path.dirname(__file__),"../../../genpack.bat"), cwd=r"../../../")
-
-    # Trigger the compiler
-    stdout, stderr = process.communicate()
+    # Trigger the compiler process
+    subprocess.call(["../../../brigador.exe", "-genpack"], cwd=r"../../../")
 
     # Report that hte compiler has closed
-    print("Compiler has finished.")
+    print("\nCompiler has finished.")
 
 # Begin Operation
 if __name__ == '__main__':
