@@ -121,7 +121,56 @@ def modSelectionOptions(choice):
 
 # Triggers for the utilities menu's options
 def utilitiesMenuOptions(choice):
-    pass
+    # Mark globals
+    global MODS_AVAILABLE
+    global MOD_INFO_FILE
+
+    # Decide what action to take
+    if choice == "0":
+        # Generate a mod details file for a selected mod
+        # Ask the user which mod to generate a details file for
+        modChoice = gu.presentTextMenu("What mod should the details file be generated for?", MODS_AVAILABLE)
+        
+        # Get the actual mod choice string
+        modChoice = MODS_AVAILABLE[int(modChoice)]
+
+        # Establish the mod's base directory
+        modBaseDir = ("../"+modChoice)
+
+        # Create the base for the new mod details file
+        detailsFileData = {}
+        detailsFileData['title'] = modChoice
+        detailsFileData['version'] = "v1.0.0"
+        detailsFileData['category'] = modChoice.upper()+" | SNC Requisitions"
+        detailsFileData['files'] = []
+
+        # Loop through the files in the mod folder
+        for dirpath, dirnames, filenames in os.walk(modBaseDir):
+            # Loop through the files in the current directory
+            for filename in filenames:
+                # Make sure it's a valid json
+                if filename != "global.json" and os.fsdecode(filename).endswith(".json"):
+                    # Create a file data dict
+                    fileData = {}
+
+                    # Formulate and add the full file path
+                    fileData['path'] = pathToStandard((dirpath+"/"+filename).replace("\\", "/").replace("//", "/"))
+
+                    # Mark as player usable
+                    fileData['forPlayer'] = True
+
+                    # Add the new file data to the details
+                    detailsFileData['files'].append(fileData)
+
+        # TODO: If the file exists, ask the user if they want to overwrite the current details file
+
+        # Create a new mod details file
+        with open((modBaseDir+"/"+MOD_INFO_FILE), "w+") as detailsFile:
+            # Dump the details string to the file
+            json.dump(detailsFileData, detailsFile)
+
+        # Report the process
+        print("\nCreated a "+MOD_INFO_FILE+" file for "+modChoice+".")
 
 # Functions
 # Makes a backup of the global json file if one does not exist yet
