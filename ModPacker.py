@@ -21,6 +21,7 @@ MODS_SELECTED = []
 def main():
     # Mark globals
     global MODS_AVAILABLE
+    global MODS_SELECTED
     global GLOBAL_DIR
     global BACKUP_EXT
     global SETTINGS_FILE
@@ -29,9 +30,13 @@ def main():
     # Check if a global json backup already exists
     backupGlobalJson()
 
-    # Load the settings
+    # Load the settings from the file
     with open(SETTINGS_FILE, "r") as sFile:
         SETTINGS = json.load(sFile)
+
+    # Populate the selected mods list
+    for mod in SETTINGS['Mods']:
+        MODS_SELECTED.append(mod)
 
     # Populate the avalible mods list
     for fileName in os.listdir("../"):
@@ -93,11 +98,15 @@ def modSelectionOptions(choice):
         # Pull the mod file
         modFile = MODS_AVAILABLE[choiceInt]
 
-        # Mark the chosen mod as a select mod
-        MODS_SELECTED.append(modFile)
-
-        # Add the mod to the settings
-        SETTINGS['Mods'][modFile] = "true"
+        # Add/Remove the mod to the settings and the selected mod list
+        if modFile in SETTINGS['Mods']:
+            # Mod is already in the list, remove it
+            SETTINGS['Mods'].remove(modFile)
+            MODS_SELECTED.remove(modFile)
+        else:
+            # Mod is not in the list, add it
+            SETTINGS['Mods'].append(modFile)
+            MODS_SELECTED.append(modFile)
 
 # Functions
 # Makes a backup of the global json file if one does not exist yet
