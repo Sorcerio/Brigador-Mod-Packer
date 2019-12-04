@@ -257,10 +257,10 @@ def packageMods():
             # Open the mods details file
             with open("../"+mod+"/"+MOD_INFO_FILE, "r", encoding="latin-1") as modDetails:
                 # Get the file information from the mod details file
-                fileDataList = json.load(modDetails)['files']
+                modInfo = json.load(modDetails)
 
                 # Loop through the file data
-                for fileData in fileDataList:
+                for fileData in modInfo['files']:
                     # Generate the full path
                     path = os.path.normpath(os.path.join(os.getcwd(), ("../../../"+fileData['path']))).replace("\\", "/").replace("//", "/")
 
@@ -273,7 +273,11 @@ def packageMods():
                             # Inform the user that the json file isn't valid
                             print(path+" is not a valid .json file.")
                         else:
-                            # If the file was parsed, add mod to the global json
+                            # Runs only if the file was parsed
+                            # Add the category to the file data
+                            fileData['category'] = modInfo['category']
+
+                            # Add mod to the global json
                             addModToGlobal(jsonData, fileData['path'], fileData)
         else:
             # Activate the mod using a guestimated enabling
@@ -299,7 +303,7 @@ def packageMods():
                                 addModToGlobal(jsonData, path)
 
     gu.writeFullFile("dump.txt", json.dumps(GLOBAL_JSON))
-    exit() # TODO: Remove this!
+    # exit() # TODO: Remove this!
 
     # Open the global json file to write to
     globalJsonFile = open(GLOBAL_DIR, "w", encoding="latin-1")
@@ -312,10 +316,15 @@ def packageMods():
 
 # Adds the given json mod to global
 # Currently Supports: All Vehicles, All Weapons, Pilots, Specials
-def addModToGlobal(data, path, extras = {"forPlayer": True}):
+def addModToGlobal(data, path, extras = None):
     # Mark globals
     global CATEGORY_NAME
     global GLOBAL_JSON
+
+    # Check if extras are none
+    if extras == None:
+        # Load the defaults
+        extras = {"forPlayer": True, "category": CATEGORY_NAME}
 
     # Watch out for archetype failures
     try:
@@ -326,7 +335,7 @@ def addModToGlobal(data, path, extras = {"forPlayer": True}):
             categoryIndex = -1
             tick = 0
             for item in GLOBAL_JSON['mechs']:
-                if item['name'] == CATEGORY_NAME:
+                if item['name'] == extras['category']:
                     hasCategory = True
                     categoryIndex = tick-1
                     break
@@ -340,11 +349,11 @@ def addModToGlobal(data, path, extras = {"forPlayer": True}):
                 categoryIndex = len(GLOBAL_JSON['mechs'])
 
                 # Add to category
-                GLOBAL_JSON['mechs'].append({'name' : CATEGORY_NAME, 'list' : []})
+                GLOBAL_JSON['mechs'].append({'name' : extras['category'], 'list' : []})
 
             # Add Mod link to category
             for category in GLOBAL_JSON['mechs']:
-                if category['name'] == CATEGORY_NAME:
+                if category['name'] == extras['category']:
                     category['list'].append(pathToStandard(path))
                     break
 
@@ -411,7 +420,7 @@ def startBrigador():
     subprocess.call(["../../../brigador.exe"], cwd=r"../../../")
 
     # Check if the python should close
-    if(not SETTINGS['Settings'].getboolean("remainOpen")):
+    if(not SETTINGS['Settings']['remainOpen']):
         exit()
 
 # Populates the selected mods in the settings file
