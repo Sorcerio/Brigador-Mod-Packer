@@ -123,69 +123,10 @@ def modSelectionOptions(choice):
 
 # Triggers for the utilities menu's options
 def utilitiesMenuOptions(choice):
-    # Mark globals
-    global MODS_AVAILABLE
-    global MOD_INFO_FILE
-    global GLOBAL_FILE
-    global MOD_INFO_FILE
-
     # Decide what action to take
     if choice == "0":
-        # Generate a mod details file for a selected mod
-        # TODO: Make a function
-        # TODO: Have it check the archetype of the json file (and if it has one) choose if the file should be player accessible
-        # Ask the user which mod to generate a details file for
-        modChoice = gu.presentTextMenu("What mod should the details file be generated for?", MODS_AVAILABLE)
-        
-        # Get the actual mod choice string
-        modChoice = MODS_AVAILABLE[int(modChoice)]
-
-        # Establish the mod's base directory
-        modBaseDir = ("../"+modChoice)
-
-        # Create the base for the new mod details file
-        detailsFileData = {}
-        detailsFileData['title'] = modChoice
-        detailsFileData['version'] = "v1.0.0"
-        detailsFileData['category'] = modChoice.upper()+" | SNC Requisitions"
-        detailsFileData['files'] = []
-
-        # Loop through the files in the mod folder
-        for dirpath, dirnames, filenames in os.walk(modBaseDir):
-            # Loop through the files in the current directory
-            for filename in filenames:
-                # Make sure it's a valid json
-                if filename != GLOBAL_FILE and filename != MOD_INFO_FILE and os.fsdecode(filename).endswith(".json"):
-                    # Create a file data dict
-                    fileData = {}
-
-                    # Formulate and add the full file path
-                    fileData['path'] = pathToStandard((dirpath+"/"+filename).replace("\\", "/").replace("//", "/"))
-
-                    # Mark as player usable
-                    fileData['forPlayer'] = True
-
-                    # Add the new file data to the details
-                    detailsFileData['files'].append(fileData)
-
-        # Check if a details file already exists
-        canContinue = True
-        if os.path.exists(modBaseDir+"/"+MOD_INFO_FILE):
-            # Ask the user if an overwrite is ok
-            canContinue = gu.askUserYesNo("A "+MOD_INFO_FILE+" file already exists. Would you like to overwrite it?", True)
-
-        # Check if this can continue
-        if canContinue:
-            # Create a new mod details file
-            with open((modBaseDir+"/"+MOD_INFO_FILE), "w+") as detailsFile:
-                # Dump the details string to the file
-                json.dump(detailsFileData, detailsFile)
-
-            # Report the process
-            print("\nCreated a "+MOD_INFO_FILE+" file for "+modChoice+".")
-        else:
-            # Report the cancel
-            print("\nCanceled the "+MOD_INFO_FILE+" file generation.")
+        # Show menu to generate a mod details file
+        generateModDetailsFile()
 
 # Functions
 # Makes a backup of the global json file if one does not exist yet
@@ -486,6 +427,69 @@ def utilitiesMenu():
     # Show the utilities menu
     choices = ["Generate Mod Details for Mod"]
     gu.textMenu("Utilities", choices, "Back", utilitiesMenuOptions)
+
+# Generates a mod details file for the provided information
+def generateModDetailsFile():
+    # Mark globals
+    global MODS_AVAILABLE
+    global MOD_INFO_FILE
+    global GLOBAL_FILE
+    global MOD_INFO_FILE
+
+    # TODO: Have it check the archetype of the json file (and if it has one) choose if the file should be player accessible
+    
+    # Ask the user which mod to generate a details file for
+    modChoice = gu.presentTextMenu("What mod should the details file be generated for?", MODS_AVAILABLE)
+    
+    # Get the actual mod choice string
+    modChoice = MODS_AVAILABLE[int(modChoice)]
+
+    # Establish the mod's base directory
+    modBaseDir = ("../"+modChoice)
+
+    # Create the base for the new mod details file
+    detailsFileData = {}
+    detailsFileData['title'] = modChoice
+    detailsFileData['version'] = "v1.0.0"
+    detailsFileData['category'] = modChoice.upper()+" | SNC Requisitions"
+    detailsFileData['files'] = []
+
+    # Loop through the files in the mod folder
+    for dirpath, dirnames, filenames in os.walk(modBaseDir):
+        # Loop through the files in the current directory
+        for filename in filenames:
+            # Make sure it's a valid json
+            if filename != GLOBAL_FILE and filename != MOD_INFO_FILE and os.fsdecode(filename).endswith(".json"):
+                # Create a file data dict
+                fileData = {}
+
+                # Formulate and add the full file path
+                fileData['path'] = pathToStandard((dirpath+"/"+filename).replace("\\", "/").replace("//", "/"))
+
+                # Mark as player usable
+                fileData['forPlayer'] = True
+
+                # Add the new file data to the details
+                detailsFileData['files'].append(fileData)
+
+    # Check if a details file already exists
+    canContinue = True
+    if os.path.exists(modBaseDir+"/"+MOD_INFO_FILE):
+        # Ask the user if an overwrite is ok
+        canContinue = gu.askUserYesNo("A "+MOD_INFO_FILE+" file already exists. Would you like to overwrite it?", True)
+
+    # Check if this can continue
+    if canContinue:
+        # Create a new mod details file
+        with open((modBaseDir+"/"+MOD_INFO_FILE), "w+") as detailsFile:
+            # Dump the details string to the file
+            json.dump(detailsFileData, detailsFile)
+
+        # Report the process
+        print("\nCreated a "+MOD_INFO_FILE+" file for "+modChoice+".")
+    else:
+        # Report the cancel
+        print("\nCanceled the "+MOD_INFO_FILE+" file generation.")
 
 # Begin Operation
 if __name__ == '__main__':

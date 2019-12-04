@@ -1,5 +1,6 @@
 {
     "title": "Title of Your Mod",
+    "description": "Short Description of Your Mod",
     "version": "v1.0.0",
     "category": "VARIOUS | SNC Requisitions",
     "files": [
