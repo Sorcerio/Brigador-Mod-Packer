@@ -97,6 +97,7 @@ def modSelectMenu():
 def packageMods():
     # Mark globals
     global GLOBAL_DIR
+    global GLOBAL_JSON
     global MODS_SELECTED
 
     # Look for a global json file
@@ -129,14 +130,25 @@ def packageMods():
                     # Formulate the full file path
                     path = (dirpath+"/"+filename).replace("\\", "/").replace("//", "/")
 
-                    # Add the build path to the mod paths
-                    modPaths.append(path)
-
-    print(modPaths)
+                    # Open and load the selected json file
+                    with open(path, "r", encoding="latin-1") as jsonFile:
+                        try:
+                            # Attempt to parse the json data
+                            jsonData = json.load(jsonFile)
+                        except Exception:
+                            # Inform the user that the json file isn't valid
+                            print(path+" is not a valid .json file.")
+                        else:
+                            # If the file was parsed, add mod to the global json
+                            addModToGlobal(jsonData, path)
 
 # Adds the given json mod to global
 # Currently Supports: All Vehicles, All Weapons, Pilots, Specials
 def addModToGlobal(data, path):
+    # Mark globals
+    global CATEGORY_NAME
+    global GLOBAL_JSON
+
     # Watch out for archetype failures
     try:
         # Check if the data is a Mech
