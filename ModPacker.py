@@ -59,6 +59,7 @@ def mainMenuOptions(choice):
     global SETTINGS
 
     # Decide what action to take
+    # TODO: Add a check to see if the compiler needs to be run or if mods are already compiled from a previous start
     if choice == "0":
         # Mod selection menu
         modSelectMenu()
@@ -131,6 +132,8 @@ def utilitiesMenuOptions(choice):
     # Decide what action to take
     if choice == "0":
         # Generate a mod details file for a selected mod
+        # TODO: Make a function
+        # TODO: Have it check the archetype of the json file (and if it has one) choose if the file should be player accessible
         # Ask the user which mod to generate a details file for
         modChoice = gu.presentTextMenu("What mod should the details file be generated for?", MODS_AVAILABLE)
         
@@ -200,17 +203,36 @@ def backupGlobalJson():
 # Populates and opens the mod selection menu
 def modSelectMenu():
     # Mark globals
+    global MOD_INFO_FILE
     global MODS_AVAILABLE
     global MODS_SELECTED
 
     # Create the mod choice list
     modDisplay = {}
     for mod in MODS_AVAILABLE:
+        # Determine if the mod has a details file
+        title = mod
+        detailsPath = ("../"+mod+"/"+MOD_INFO_FILE)
+        if os.path.exists(detailsPath):
+            # Fetch extra details from the info file
+            with open(detailsPath, "r", encoding="latin-1") as modInfoFile:
+                # Get the mod information from the mod details file
+                modInfo = json.load(modInfoFile)
+
+                # Decide plurality
+                modFileCount = len(modInfo['files'])
+                filesWord = "files"
+                if modFileCount == 1:
+                    filesWord = "file"
+
+                # Use mod information to make a title
+                title = (modInfo['title']+" ("+modInfo['version']+", "+str(modFileCount)+" "+filesWord+")")
+
         # Check if currently selected
         if mod in MODS_SELECTED:
-            modDisplay[mod] = True
+            modDisplay[title] = True
         else:
-            modDisplay[mod] = False
+            modDisplay[title] = False
 
     # Show mod selection menu until exit
     gu.checkboxMenu("Mod Selection", modDisplay, "Confirm Selections", modSelectionOptions)
@@ -220,7 +242,11 @@ def modSelectMenu():
         json.dump(SETTINGS, sFile)
 
     # Print the success message
-    print("\n"+str(len(MODS_SELECTED))+" mods have been selected.")
+    modAddedCount = len(MODS_SELECTED)
+    if modAddedCount == 1:
+        print("\n"+str(modAddedCount)+" mod has been selected.")
+    else:
+        print("\n"+str(modAddedCount)+" mods have been selected.")
 
 # Packages the selected mods into the global.json file
 def packageMods():
@@ -327,6 +353,7 @@ def addModToGlobal(data, path, extras = None):
         extras = {"forPlayer": True, "category": CATEGORY_NAME}
 
     # Watch out for archetype failures
+    # TODO: For each, check if the item should be avalible to players!
     try:
         # Check if the data is a Mech
         if data['archetype'] == "MECH":
