@@ -4,13 +4,15 @@
 # Imports
 import os
 import json
-# from subprocess import Popen
 import subprocess
+import configparser
 import generalUtilities as gu
 
 # Globals
 CATEGORY_NAME = "VARIOUS | SNC Requisitions"
 BACKUP_EXT = ".BAK"
+SETTINGS_INI = "settings.ini"
+SETTINGS = None
 GLOBAL_DIR = "../../data/global.json"
 GLOBAL_JSON = {}
 MODS_AVAILABLE = []
@@ -22,9 +24,15 @@ def main():
     global MODS_AVAILABLE
     global GLOBAL_DIR
     global BACKUP_EXT
+    global SETTINGS_INI
+    global SETTINGS
 
     # Check if a global json backup already exists
     backupGlobalJson()
+
+    # Load the settings
+    SETTINGS = configparser.ConfigParser()
+    SETTINGS.read(SETTINGS_INI)
 
     # Populate the avalible mods list
     for fileName in os.listdir("../"):
@@ -267,12 +275,17 @@ def compileGlobalJson():
 def startBrigador():
     # Mark globals
     global MODS_SELECTED
+    global SETTINGS
 
     # Mark that the game is opening
     print("\nOpening Brigador with "+str(len(MODS_SELECTED))+" mods.")
 
     # Start the Brigador exe
     subprocess.call(["../../../brigador.exe"], cwd=r"../../../")
+
+    # Check if the python should close
+    if(not SETTINGS['Settings'].getboolean("remainOpen")):
+        exit()
 
 # Begin Operation
 if __name__ == '__main__':
