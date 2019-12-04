@@ -34,6 +34,8 @@ def main():
     SETTINGS = configparser.ConfigParser()
     SETTINGS.read(SETTINGS_INI)
 
+    # TODO: Loop through enabled mods
+
     # Populate the avalible mods list
     for fileName in os.listdir("../"):
         if os.path.basename(os.getcwd()) != fileName and os.path.isdir("../"+fileName):
@@ -85,12 +87,20 @@ def modSelectionOptions(choice):
     # Mark globals
     global MODS_AVAILABLE
     global MODS_SELECTED
+    global SETTINGS
+    global SETTINGS_INI
 
     # Make sure the choice is within bounds
     choiceInt = int(choice)
     if choiceInt > 0 and choiceInt <= (len(MODS_AVAILABLE)-2):
+        # Pull the mod file
+        modFile = MODS_AVAILABLE[choiceInt]
+
         # Mark the chosen mod as a select mod
-        MODS_SELECTED.append(MODS_AVAILABLE[choiceInt])
+        MODS_SELECTED.append(modFile)
+
+        # Add the mod to the settings
+        SETTINGS['Mods'][modFile] = "true"
 
 # Functions
 # Makes a backup of the global json file if one does not exist yet
@@ -122,6 +132,10 @@ def modSelectMenu():
 
     # Show mod selection menu until exit
     gu.checkboxMenu("Mod Selection", modDisplay, "Confirm Selections", modSelectionOptions)
+
+    # Save the settings file
+    with open(SETTINGS_INI, "w") as configFile:
+        SETTINGS.write(configFile)
 
     # Print the success message
     print("\n"+str(len(MODS_SELECTED))+" mods have been selected.")
