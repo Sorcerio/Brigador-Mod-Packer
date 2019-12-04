@@ -9,6 +9,7 @@ import generalUtilities as gu
 
 # Globals
 CATEGORY_NAME = "VARIOUS | SNC Requisitions"
+BACKUP_EXT = ".BAK"
 GLOBAL_DIR = "../../data/global.json"
 GLOBAL_JSON = {}
 MODS_AVAILABLE = []
@@ -18,8 +19,18 @@ MODS_SELECTED = []
 def main():
     # Mark globals
     global MODS_AVAILABLE
+    global GLOBAL_DIR
+    global BACKUP_EXT
 
-    # TODO: Check if a backup of the global json should be made
+    # Check if a global json backup already exists
+    if not os.path.isfile(GLOBAL_DIR+BACKUP_EXT):
+        # Open the read and write global json files
+        with open(GLOBAL_DIR, "r", encoding = "Latin-1") as readFile:
+            with open(GLOBAL_DIR+".BAK", "w", encoding = "Latin-1") as writeFile:
+                writeFile.write(readFile.read())
+
+        # Report that a backup has been made
+        print("Made a backup of the global.json file.")
 
     # Populate the avalible mods list
     for fileName in os.listdir("../"):
