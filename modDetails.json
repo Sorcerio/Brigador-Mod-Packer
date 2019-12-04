@@ -1,0 +1,15 @@
+{
+    "title": "Title of Your Mod",
+    "version": "v1.0.0",
+    "category": "VARIOUS | SNC Requisitions",
+    "files": [
+        {
+            "path": "a.json",
+            "forPlayer": false
+        },
+        {
+            "path": "directory/b.json",
+            "forPlayer": true
+        }
+    ]
+}

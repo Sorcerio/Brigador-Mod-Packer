@@ -12,6 +12,7 @@ CATEGORY_NAME = "VARIOUS | SNC Requisitions"
 BACKUP_EXT = ".BAK"
 SETTINGS_FILE = "settings.json"
 SETTINGS = None
+MOD_INFO_FILE = "modDetails.json"
 GLOBAL_DIR = "../../data/global.json"
 GLOBAL_JSON = {}
 MODS_AVAILABLE = []
@@ -154,6 +155,7 @@ def packageMods():
     # Mark globals
     global GLOBAL_DIR
     global GLOBAL_JSON
+    global MOD_INFO_FILE
     global MODS_SELECTED
 
     # Look for a global json file
@@ -176,26 +178,46 @@ def packageMods():
 
     # Collect the json files from the selected mods
     for mod in MODS_SELECTED:
-        # Loop through the files in each mod folder
-        for dirpath, dirnames, filenames in os.walk("../"+mod):
-            # Loop through the files in the current directory
-            for filename in filenames:
-                # Make sure it's a valid json
-                if filename != "global.json" and os.fsdecode(filename).endswith(".json"):
-                    # Formulate the full file path
-                    path = (dirpath+"/"+filename).replace("\\", "/").replace("//", "/")
+        # Check if the mod has a mod details file
+        if os.path.isfile("../"+mod+"/"+MOD_INFO_FILE):
+            # Activate the mod using the mod info file
+            # Open the mods details file
+            with open("../"+mod+"/"+MOD_INFO_FILE, "r", encoding="latin-1") as modDetails:
+                # Get the file information from the mod details file
+                fileData = json.load(modDetails)['files']
 
-                    # Open and load the selected json file
-                    with open(path, "r", encoding="latin-1") as jsonFile:
-                        try:
-                            # Attempt to parse the json data
-                            jsonData = json.load(jsonFile)
-                        except Exception:
-                            # Inform the user that the json file isn't valid
-                            print(path+" is not a valid .json file.")
-                        else:
-                            # If the file was parsed, add mod to the global json
-                            addModToGlobal(jsonData, path)
+                # Loop through the file data
+                for data in fileData:
+                    pass
+        else:
+            # Activate the mod using a guestimated enabling
+            # Loop through the files in each mod folder
+            for dirpath, dirnames, filenames in os.walk("../"+mod):
+                # Loop through the files in the current directory
+                for filename in filenames:
+                    # Make sure it's a valid json
+                    if filename != "global.json" and os.fsdecode(filename).endswith(".json"):
+                        # Formulate the full file path
+                        path = (dirpath+"/"+filename).replace("\\", "/").replace("//", "/")
+
+                        # Open and load the selected json file
+                        with open(path, "r", encoding="latin-1") as jsonFile:
+                            try:
+                                # Attempt to parse the json data
+                                jsonData = json.load(jsonFile)
+                            except Exception:
+                                # Inform the user that the json file isn't valid
+                                print(path+" is not a valid .json file.")
+                            else:
+
+                                print(path)
+
+                                # If the file was parsed, add mod to the global json
+                                addModToGlobal(jsonData, path)
+
+                        print("==========")
+
+    exit() # TODO: Remove this!
 
     # Open the global json file to write to
     globalJsonFile = open(GLOBAL_DIR, "w", encoding="latin-1")
