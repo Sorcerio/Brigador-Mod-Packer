@@ -142,6 +142,15 @@ def packageMods():
                             # If the file was parsed, add mod to the global json
                             addModToGlobal(jsonData, path)
 
+    # Open the global json file to write to
+    globalJsonFile = open(GLOBAL_DIR, "w")
+
+    # Dump the new global data to the global json
+    json.dump(GLOBAL_JSON, globalJsonFile)
+
+    # Close the global json file
+    globalJsonFile.close()
+
 # Adds the given json mod to global
 # Currently Supports: All Vehicles, All Weapons, Pilots, Specials
 def addModToGlobal(data, path):
