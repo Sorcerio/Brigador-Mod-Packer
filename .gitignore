@@ -1,5 +1,6 @@
 # Brigador Mod Packer
 settings.json
+dump.*
 
 # User-specific files
 *.suo

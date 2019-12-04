@@ -261,8 +261,11 @@ def packageMods():
 
                 # Loop through the file data
                 for fileData in fileDataList:
+                    # Generate the full path
+                    path = os.path.normpath(os.path.join(os.getcwd(), ("../../../"+fileData['path']))).replace("\\", "/").replace("//", "/")
+
                     # Open and load the selected json file
-                    with open(fileData['path'], "r", encoding="latin-1") as jsonFile:
+                    with open(path, "r", encoding="latin-1") as jsonFile:
                         try:
                             # Attempt to parse the json data
                             jsonData = json.load(jsonFile)
@@ -271,7 +274,7 @@ def packageMods():
                             print(path+" is not a valid .json file.")
                         else:
                             # If the file was parsed, add mod to the global json
-                            addModToGlobal(jsonData, path, fileData)
+                            addModToGlobal(jsonData, fileData['path'], fileData)
         else:
             # Activate the mod using a guestimated enabling
             # Loop through the files in each mod folder
