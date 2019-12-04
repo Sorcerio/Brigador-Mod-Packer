@@ -32,7 +32,7 @@ def main():
             MODS_AVAILABLE.append(fileName)
 
     # Show the main menu
-    mainOptions = ["Select Mods", "Pack Mods", "Pack and Start", "Options"]
+    mainOptions = ["Select Mods", "Play with Selected Mods", "Play without Mods", "Options"]
     gu.textMenu("Brigador Mod Packer", mainOptions, "Quit", mainMenuOptions)
 
 # Menu Triggers
@@ -40,16 +40,24 @@ def main():
 def mainMenuOptions(choice):
     # Decide what action to take
     if choice == "0":
+        # Mod selection menu
         modSelectMenu()
     elif choice == "1":
+        # Play with selected mods
         # Package the mods
         packageMods()
 
         # Compile the mods
         compileGlobalJson()
+
+        # Start Brigador
+        startBrigador()
     elif choice == "2":
+        # Play vanilla
+        # TODO: Same as 1, but sets all mods to unselected
         print("Feature TBD")
     elif choice == "3":
+        # Options menu
         print("Feature TBD")
 
 # Triggers for the mod selection menu's options
@@ -242,6 +250,17 @@ def compileGlobalJson():
 
     # Report that hte compiler has closed
     print("\nCompiler has finished.")
+
+# Starts the Brigador game
+def startBrigador():
+    # Mark globals
+    global MODS_SELECTED
+
+    # Mark that the game is opening
+    print("\nOpening Brigador with "+str(len(MODS_SELECTED))+" mods.")
+
+    # Start the Brigador exe
+    subprocess.call(["../../../brigador.exe"], cwd=r"../../../")
 
 # Begin Operation
 if __name__ == '__main__':
