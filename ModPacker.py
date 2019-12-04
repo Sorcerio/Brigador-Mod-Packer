@@ -13,7 +13,8 @@ BACKUP_EXT = ".BAK"
 SETTINGS_FILE = "settings.json"
 SETTINGS = None
 MOD_INFO_FILE = "modDetails.json"
-GLOBAL_DIR = "../../data/global.json"
+GLOBAL_FILE = "global.json"
+GLOBAL_DIR = ("../../data/"+GLOBAL_FILE)
 GLOBAL_JSON = {}
 MODS_AVAILABLE = []
 MODS_SELECTED = []
@@ -124,6 +125,8 @@ def utilitiesMenuOptions(choice):
     # Mark globals
     global MODS_AVAILABLE
     global MOD_INFO_FILE
+    global GLOBAL_FILE
+    global MOD_INFO_FILE
 
     # Decide what action to take
     if choice == "0":
@@ -149,7 +152,7 @@ def utilitiesMenuOptions(choice):
             # Loop through the files in the current directory
             for filename in filenames:
                 # Make sure it's a valid json
-                if filename != "global.json" and os.fsdecode(filename).endswith(".json"):
+                if filename != GLOBAL_FILE and filename != MOD_INFO_FILE and os.fsdecode(filename).endswith(".json"):
                     # Create a file data dict
                     fileData = {}
 
@@ -192,7 +195,7 @@ def backupGlobalJson():
                 writeFile.write(readFile.read())
 
         # Report that a backup has been made
-        print("Made a backup of the global.json file.")
+        print("Made a backup of the "+GLOBAL_FILE+" file.")
 
 # Populates and opens the mod selection menu
 def modSelectMenu():
@@ -222,6 +225,7 @@ def modSelectMenu():
 # Packages the selected mods into the global.json file
 def packageMods():
     # Mark globals
+    global GLOBAL_FILE
     global GLOBAL_DIR
     global GLOBAL_JSON
     global MOD_INFO_FILE
@@ -242,7 +246,7 @@ def packageMods():
         globalFile.close()
     else:
         # Tell the user no file exists
-        print("Somehow you don't have a global.json file. You should fix that ASAP.")
+        print("Somehow you don't have a "+GLOBAL_FILE+" file. You should fix that ASAP.")
         exit()
 
     # Collect the json files from the selected mods
@@ -253,11 +257,21 @@ def packageMods():
             # Open the mods details file
             with open("../"+mod+"/"+MOD_INFO_FILE, "r", encoding="latin-1") as modDetails:
                 # Get the file information from the mod details file
-                fileData = json.load(modDetails)['files']
+                fileDataList = json.load(modDetails)['files']
 
                 # Loop through the file data
-                for data in fileData:
-                    pass
+                for fileData in fileDataList:
+                    # Open and load the selected json file
+                    with open(fileData['path'], "r", encoding="latin-1") as jsonFile:
+                        try:
+                            # Attempt to parse the json data
+                            jsonData = json.load(jsonFile)
+                        except Exception:
+                            # Inform the user that the json file isn't valid
+                            print(path+" is not a valid .json file.")
+                        else:
+                            # If the file was parsed, add mod to the global json
+                            addModToGlobal(jsonData, path, fileData)
         else:
             # Activate the mod using a guestimated enabling
             # Loop through the files in each mod folder
@@ -265,7 +279,7 @@ def packageMods():
                 # Loop through the files in the current directory
                 for filename in filenames:
                     # Make sure it's a valid json
-                    if filename != "global.json" and os.fsdecode(filename).endswith(".json"):
+                    if filename != GLOBAL_FILE and filename != MOD_INFO_FILE and os.fsdecode(filename).endswith(".json"):
                         # Formulate the full file path
                         path = (dirpath+"/"+filename).replace("\\", "/").replace("//", "/")
 
@@ -278,14 +292,10 @@ def packageMods():
                                 # Inform the user that the json file isn't valid
                                 print(path+" is not a valid .json file.")
                             else:
-
-                                print(path)
-
                                 # If the file was parsed, add mod to the global json
                                 addModToGlobal(jsonData, path)
 
-                        print("==========")
-
+    gu.writeFullFile("dump.txt", json.dumps(GLOBAL_JSON))
     exit() # TODO: Remove this!
 
     # Open the global json file to write to
@@ -299,7 +309,7 @@ def packageMods():
 
 # Adds the given json mod to global
 # Currently Supports: All Vehicles, All Weapons, Pilots, Specials
-def addModToGlobal(data, path):
+def addModToGlobal(data, path, extras = {"forPlayer": True}):
     # Mark globals
     global CATEGORY_NAME
     global GLOBAL_JSON
