@@ -97,12 +97,13 @@ def modSelectMenu():
 def packageMods():
     # Mark globals
     global GLOBAL_DIR
+    global MODS_SELECTED
 
     # Look for a global json file
     if os.path.isfile(GLOBAL_DIR):
         # Check if a global json backup already exists
         backupGlobalJson()
-            
+
         # Open the backup global json file
         globalFile = open(GLOBAL_DIR+BACKUP_EXT, "r", encoding="latin-1")
 
@@ -115,8 +116,23 @@ def packageMods():
         # Tell the user no file exists
         print("Somehow you don't have a global.json file. You should fix that ASAP.")
         exit()
-    
-    print(GLOBAL_JSON)
+
+    # Collect the json files from the selected mods
+    modPaths = []
+    for mod in MODS_SELECTED:
+        # Loop through the files in each mod folder
+        for dirpath, dirnames, filenames in os.walk("../"+mod):
+            # Loop through the files in the current directory
+            for filename in filenames:
+                # Make sure it's a valid json
+                if filename != "global.json" and os.fsdecode(filename).endswith(".json"):
+                    # Formulate the full file path
+                    path = (dirpath+"/"+filename).replace("\\", "/").replace("//", "/")
+
+                    # Add the build path to the mod paths
+                    modPaths.append(path)
+
+    print(modPaths)
 
 # Adds the given json mod to global
 # Currently Supports: All Vehicles, All Weapons, Pilots, Specials
