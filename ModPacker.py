@@ -41,7 +41,11 @@ def mainMenuOptions(choice):
     if choice == "0":
         modSelectMenu()
     elif choice == "1":
+        # Package the mods
         packageMods()
+
+        # Compile the mods
+        compileGlobalJson()
     elif choice == "2":
         print("Feature TBD")
     elif choice == "3":
@@ -227,6 +231,20 @@ def addModToGlobal(data, path):
 def pathToStandard(path):
     # Replace and send
     return path.replace("../","assets/_modkit/")
+
+# Compiles the current global json file so the mods it contains can be used in game
+def compileGlobalJson():
+    # Report that the compiler will open
+    print("Opening the compiler.")
+
+    # Prepare the compiler process
+    process = Popen(os.path.join(os.path.dirname(__file__),"../../../genpack.bat"), cwd=r"../../../")
+
+    # Trigger the compiler
+    stdout, stderr = process.communicate()
+
+    # Report that hte compiler has closed
+    print("Compiler has finished.")
 
 # Begin Operation
 if __name__ == '__main__':
