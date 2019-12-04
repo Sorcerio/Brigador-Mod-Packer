@@ -35,8 +35,7 @@ def main():
         SETTINGS = json.load(sFile)
 
     # Populate the selected mods list
-    for mod in SETTINGS['Mods']:
-        MODS_SELECTED.append(mod)
+    populateModsFromSettings()
 
     # Populate the avalible mods list
     for fileName in os.listdir("../"):
@@ -82,9 +81,8 @@ def mainMenuOptions(choice):
         # Start Brigador
         startBrigador()
 
-        # Populate the selected mods list
-        for mod in SETTINGS['Mods']:
-            MODS_SELECTED.append(mod)
+        # Populate the selected mods list again
+        populateModsFromSettings()
     elif choice == "3":
         # Options menu
         print("Feature TBD")
@@ -200,7 +198,7 @@ def packageMods():
                             addModToGlobal(jsonData, path)
 
     # Open the global json file to write to
-    globalJsonFile = open(GLOBAL_DIR, "w")
+    globalJsonFile = open(GLOBAL_DIR, "w", encoding="latin-1")
 
     # Dump the new global data to the global json
     json.dump(GLOBAL_JSON, globalJsonFile)
@@ -311,6 +309,20 @@ def startBrigador():
     # Check if the python should close
     if(not SETTINGS['Settings'].getboolean("remainOpen")):
         exit()
+
+# Populates the selected mods in the settings file
+def populateModsFromSettings():
+    # Mark global
+    global SETTINGS
+
+    # Check if settings was instantiated
+    if "Mods" in SETTINGS:
+        # Loop through the mods in settings
+        for mod in SETTINGS['Mods']:
+            MODS_SELECTED.append(mod)
+    else:
+        # Report problem
+        print("The Settings file hasn't been loaded yet, so no data could be fetched.")
 
 # Begin Operation
 if __name__ == '__main__':
