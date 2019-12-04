@@ -4,6 +4,7 @@
 # Configuration
 TITLE_MARKER_LEFT = "["
 TITLE_MARKER_RIGHT = "]"
+CHECKBOX_INDICATOR = "X"
 
 # Methods
 # Ask the user to input a valid answer and returns the choice once answered.
@@ -230,3 +231,75 @@ def writeFullFile(fileName, text):
     with open(fileName, "w") as wFile:
         # Write the text out
         wFile.write(text)
+
+# Prints and retains a checkbox based menu system based on provided information leaving the calling program to decide function.
+# title -> The title of the menu
+# choices -> Dictionary of Choice Titles as keys and if the option is selected as Boolen for the value to be displayed by the menu
+def presentCheckboxMenu(title, choices):
+    # Print title
+    print(TITLE_MARKER_LEFT+" "+title+" "+TITLE_MARKER_RIGHT)
+
+    # Print Menu
+    index = 0
+    numberList = []
+    for choice in choices:
+        # Check if the last item
+        if index == (len(choices)-1):
+            # Print choice as a regular option
+            print("["+str(index)+"] "+choice)
+        else:
+            # Decide if the choice is checked or not
+            checkIndicator = " "
+            if choices[choice]:
+                checkIndicator = CHECKBOX_INDICATOR
+
+            # Print choice as a checkbox option
+            print("["+str(index)+"] ("+checkIndicator+") "+choice)
+
+        # Add choice to number list
+        numberList.append(index)
+
+        # Iterate
+        index += 1
+
+    # Print instructions
+    print("Select a number to choose the option.")
+
+    # Ask user for choice
+    answer = askUser("Choice", numberList, False)
+
+    # Get the choices' keys
+    choiceKeys = list(choices.keys())
+
+    # Get the key associated with the current answer
+    answersKey = choiceKeys[int(answer)]
+
+    # Mark the selected answer as checked
+    if choices[answersKey]:
+        choices[answersKey] = False
+    else:
+        choices[answersKey] = True
+
+    # Ask user for choice and return
+    return answer, choices
+
+# Prints a check box menu and handles input between an accompanied execution function all within a handled loop.
+# title -> The title of the menu
+# choices -> Dictionary of Choice Titles as keys and if the option is selected as Boolen for the value to be displayed by the menu
+# lastOption -> Option to add to the last of the choices. Often 'Back' or 'Quit'
+# func -> The function to call within the script that calls this function that uses the data gathered from this function
+def checkboxMenu(title, choices, lastOption, func):
+    # Prep answer choice
+    answer = None
+
+    # Add last option to choices
+    choices[lastOption] = False
+
+    # Enter main loop
+    while answer == None or answer != str(len(choices)-1):
+        # Present main menu and wait for input
+        print("")
+        answer, choices = presentCheckboxMenu(title, choices)
+
+        # Apply answer to main menu functions
+        func(answer)
