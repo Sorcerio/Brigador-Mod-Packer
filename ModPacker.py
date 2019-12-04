@@ -162,15 +162,24 @@ def utilitiesMenuOptions(choice):
                     # Add the new file data to the details
                     detailsFileData['files'].append(fileData)
 
-        # TODO: If the file exists, ask the user if they want to overwrite the current details file
+        # Check if a details file already exists
+        canContinue = True
+        if os.path.exists(modBaseDir+"/"+MOD_INFO_FILE):
+            # Ask the user if an overwrite is ok
+            canContinue = gu.askUserYesNo("A "+MOD_INFO_FILE+" file already exists. Would you like to overwrite it?", True)
 
-        # Create a new mod details file
-        with open((modBaseDir+"/"+MOD_INFO_FILE), "w+") as detailsFile:
-            # Dump the details string to the file
-            json.dump(detailsFileData, detailsFile)
+        # Check if this can continue
+        if canContinue:
+            # Create a new mod details file
+            with open((modBaseDir+"/"+MOD_INFO_FILE), "w+") as detailsFile:
+                # Dump the details string to the file
+                json.dump(detailsFileData, detailsFile)
 
-        # Report the process
-        print("\nCreated a "+MOD_INFO_FILE+" file for "+modChoice+".")
+            # Report the process
+            print("\nCreated a "+MOD_INFO_FILE+" file for "+modChoice+".")
+        else:
+            # Report the cancel
+            print("\nCanceled the "+MOD_INFO_FILE+" file generation.")
 
 # Functions
 # Makes a backup of the global json file if one does not exist yet
