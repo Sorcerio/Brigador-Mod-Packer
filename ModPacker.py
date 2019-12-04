@@ -52,6 +52,7 @@ def main():
 def mainMenuOptions(choice):
     # Mark globals
     global MODS_SELECTED
+    global SETTINGS
 
     # Decide what action to take
     if choice == "0":
@@ -80,6 +81,10 @@ def mainMenuOptions(choice):
 
         # Start Brigador
         startBrigador()
+
+        # Populate the selected mods list
+        for mod in SETTINGS['Mods']:
+            MODS_SELECTED.append(mod)
     elif choice == "3":
         # Options menu
         print("Feature TBD")
@@ -304,7 +309,7 @@ def startBrigador():
     subprocess.call(["../../../brigador.exe"], cwd=r"../../../")
 
     # Check if the python should close
-    if(not SETTINGS['Settings'].getboolean("remainopen")):
+    if(not SETTINGS['Settings'].getboolean("remainOpen")):
         exit()
 
 # Begin Operation
