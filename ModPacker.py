@@ -38,6 +38,9 @@ def main():
 # Menu Triggers
 # Triggers for the main menu's options
 def mainMenuOptions(choice):
+    # Mark globals
+    global MODS_SELECTED
+
     # Decide what action to take
     if choice == "0":
         # Mod selection menu
@@ -54,8 +57,17 @@ def mainMenuOptions(choice):
         startBrigador()
     elif choice == "2":
         # Play vanilla
-        # TODO: Same as 1, but sets all mods to unselected
-        print("Feature TBD")
+        # Clear the selected mods list
+        MODS_SELECTED.clear()
+
+        # Package the mods
+        packageMods()
+
+        # Compile the mods
+        compileGlobalJson()
+
+        # Start Brigador
+        startBrigador()
     elif choice == "3":
         # Options menu
         print("Feature TBD")
