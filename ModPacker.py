@@ -31,6 +31,9 @@ def main():
     # Check if a global json backup already exists
     backupGlobalJson()
 
+    # Check if a settings file has been made yet
+    createSettingsFile()
+
     # Load the settings from the file
     with open(SETTINGS_FILE, "r") as sFile:
         SETTINGS = json.load(sFile)
@@ -345,6 +348,23 @@ def populateModsFromSettings():
     else:
         # Report problem
         print("The Settings file hasn't been loaded yet, so no data could be fetched.")
+
+# Creates the settings json if it does not yet exist
+def createSettingsFile(force = False):
+    # Mark globals
+    global SETTINGS_FILE
+
+    # Check if the file exists
+    if not os.path.exists(SETTINGS_FILE) or force:
+        # Define the default settings string
+        settingsString = {}
+        settingsString['Settings'] = {"remainOpen": False}
+        settingsString['Mods'] = []
+
+        # Create a new settings file
+        with open(SETTINGS_FILE, "w+") as settingsFile:
+            # Dump the settings string to the file
+            json.dump(settingsString, settingsFile)
 
 # Begin Operation
 if __name__ == '__main__':
