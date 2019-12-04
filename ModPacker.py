@@ -11,7 +11,7 @@ import generalUtilities as gu
 CATEGORY_NAME = "VARIOUS | SNC Requisitions"
 BACKUP_EXT = ".BAK"
 GLOBAL_DIR = "../../data/global.json"
-GLOBAL_JSON = {}
+# GLOBAL_JSON = {}
 MODS_AVAILABLE = []
 MODS_SELECTED = []
 
@@ -23,14 +23,7 @@ def main():
     global BACKUP_EXT
 
     # Check if a global json backup already exists
-    if not os.path.isfile(GLOBAL_DIR+BACKUP_EXT):
-        # Open the read and write global json files
-        with open(GLOBAL_DIR, "r", encoding = "Latin-1") as readFile:
-            with open(GLOBAL_DIR+".BAK", "w", encoding = "Latin-1") as writeFile:
-                writeFile.write(readFile.read())
-
-        # Report that a backup has been made
-        print("Made a backup of the global.json file.")
+    backupGlobalJson()
 
     # Populate the avalible mods list
     for fileName in os.listdir("../"):
@@ -48,7 +41,7 @@ def mainMenuOptions(choice):
     if choice == "0":
         modSelectMenu()
     elif choice == "1":
-        print("Feature TBD")
+        packageMods()
     elif choice == "2":
         print("Feature TBD")
     elif choice == "3":
@@ -67,6 +60,18 @@ def modSelectionOptions(choice):
         MODS_SELECTED.append(MODS_AVAILABLE[choiceInt])
 
 # Functions
+# Makes a backup of the global json file if one does not exist yet
+def backupGlobalJson():
+    # Check if a global json backup already exists
+    if not os.path.isfile(GLOBAL_DIR+BACKUP_EXT):
+        # Open the read and write global json files
+        with open(GLOBAL_DIR, "r", encoding = "Latin-1") as readFile:
+            with open(GLOBAL_DIR+".BAK", "w", encoding = "Latin-1") as writeFile:
+                writeFile.write(readFile.read())
+
+        # Report that a backup has been made
+        print("Made a backup of the global.json file.")
+
 # Populates and opens the mod selection menu
 def modSelectMenu():
     # Mark globals
@@ -87,6 +92,32 @@ def modSelectMenu():
 
     # Print the success message
     print("\n"+str(len(MODS_SELECTED))+" mods have been selected.")
+
+# Packages the selected mods into the global.json file
+def packageMods():
+    # Mark globals
+    global GLOBAL_DIR
+
+    # Look for a global json file
+    globalJson = ""
+    if os.path.isfile(GLOBAL_DIR):
+        # Check if a global json backup already exists
+        backupGlobalJson()
+            
+        # Open the backup global json file
+        globalFile = open(GLOBAL_DIR+BACKUP_EXT, "r", encoding="latin-1")
+
+        # Assign the data to the global json
+        globalJson = json.load(globalFile, encoding="latin-1")
+
+        # Close the backup global json file
+        globalFile.close()
+    else:
+        # Tell the user no file exists
+        print("Somehow you don't have a global.json file. You should fix that ASAP.")
+        exit()
+    
+    print(globalJson)
 
 # Begin Operation
 if __name__ == '__main__':
