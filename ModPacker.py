@@ -18,6 +18,11 @@ GLOBAL_DIR = ("../../data/"+GLOBAL_FILE)
 GLOBAL_JSON = {}
 MODS_AVAILABLE = []
 MODS_SELECTED = []
+ARCH_MECH = "Mech"
+ARCH_PILOT = "Pilot"
+ARCH_WEAPON = "Weapon"
+ARCH_MISSION = "Misson"
+ARCH_OVERMAP = "Overmap"
 
 # Main Thread
 def main():
@@ -264,8 +269,8 @@ def packageMods():
                                 # If the file was parsed, add mod to the global json
                                 addModToGlobal(jsonData, path)
 
-    gu.writeFullFile("dump.txt", json.dumps(GLOBAL_JSON))
-    # exit() # TODO: Remove this!
+    # Debug dump of the modified global json file
+    # gu.writeFullFile("dump.txt", json.dumps(GLOBAL_JSON))
 
     # Open the global json file to write to
     globalJsonFile = open(GLOBAL_DIR, "w", encoding="latin-1")
@@ -430,8 +435,11 @@ def generateModDetailsFile():
     global MOD_INFO_FILE
     global GLOBAL_FILE
     global MOD_INFO_FILE
-
-    # TODO: Have it check the archetype of the json file (and if it has one) choose if the file should be player accessible
+    global ARCH_MECH
+    global ARCH_MISSION
+    global ARCH_OVERMAP
+    global ARCH_PILOT
+    global ARCH_WEAPON
 
     # Ask the user which mod to generate a details file for
     modChoice = gu.presentTextMenu("What mod should the details file be generated for?", MODS_AVAILABLE)
@@ -463,11 +471,26 @@ def generateModDetailsFile():
                 # Create a file data dict
                 fileData = {}
 
-                # Formulate and add the full file path
-                fileData['path'] = pathToStandard((dirpath+"/"+filename).replace("\\", "/").replace("//", "/"))
+                # Formulate the local file path
+                path = (dirpath+"/"+filename).replace("\\", "/").replace("//", "/")
+                print(path)
 
-                # Mark as player usable
-                fileData['forPlayer'] = True
+                # Add the standardized game time file path
+                fileData['path'] = pathToStandard(path)
+
+                # Check what type of archetype the json file is
+                with open(path, "r", encoding="latin-1") as jsonFile:
+                    # Get the archetype of the file
+                    fileArchetype = getFileArchetype(json.load(jsonFile))
+
+                    # Decide if the file should be marked as player usable
+                    playerUsableList = [ARCH_MECH, ARCH_PILOT, ARCH_WEAPON]
+                    if fileArchetype in playerUsableList:
+                        # Mark as player usable
+                        fileData['forPlayer'] = True
+                    else:
+                        # Mark as not player usable
+                        fileData['forPlayer'] = False
 
                 # Add the new file data to the details
                 detailsFileData['files'].append(fileData)
@@ -490,6 +513,45 @@ def generateModDetailsFile():
     else:
         # Report the cancel
         print("\nCanceled the "+MOD_INFO_FILE+" file generation.")
+
+# Determines the archetype (if possible) of the provided json/dictionary data as a string.
+# If the archetype cannot be determined (or is irrevelant to the global json file) the function returns None.
+def getFileArchetype(data):
+    # Mark globals
+    global CATEGORY_NAME
+    global GLOBAL_JSON
+    global ARCH_MECH
+    global ARCH_MISSION
+    global ARCH_OVERMAP
+    global ARCH_PILOT
+    global ARCH_WEAPON
+
+    # Prepare the archetype output
+    archetype = None
+
+    # Watch out for archetype failures
+    try:
+        if data['archetype'] == "MECH":
+            # The data is a Mech
+            archetype = ARCH_MECH
+        elif data['archetype'] == "PILOT":
+            # The data is a Pilot
+            archetype = ARCH_PILOT
+        elif "_WEAPON" in data['archetype']:
+            # The data is a weapon
+            archetype = ARCH_WEAPON
+        elif "MISSION" in data['archetype']:
+            # The data is a mission
+            archetype = ARCH_MISSION
+        elif "OVERMAP" in data['archetype']:
+            # The data is an overmap
+            archetype = ARCH_OVERMAP
+    except KeyError as e:
+        # Warn that there's an issue
+        print("Provided data is not an archetype file, ignoring")
+
+    # Send the archetype
+    return archetype
 
 # Begin Operation
 if __name__ == '__main__':
