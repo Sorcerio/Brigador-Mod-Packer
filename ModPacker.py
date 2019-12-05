@@ -357,7 +357,7 @@ def packageMods():
     globalJsonFile.close()
 
 # Adds the given json mod to global
-# Currently Supports: All Vehicles, All Weapons, Pilots, Specials
+# Currently Supports: All Vehicles, All Weapons, Pilots, Specials, Maps, and all linked files
 def addModToGlobal(data, path, extras = None):
     # Mark globals
     global CATEGORY_NAME
