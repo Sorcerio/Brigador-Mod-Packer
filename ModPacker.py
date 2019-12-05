@@ -437,7 +437,7 @@ def generateModDetailsFile():
     global MOD_INFO_FILE
 
     # TODO: Have it check the archetype of the json file (and if it has one) choose if the file should be player accessible
-    
+
     # Ask the user which mod to generate a details file for
     modChoice = gu.presentTextMenu("What mod should the details file be generated for?", MODS_AVAILABLE)
     
@@ -447,11 +447,16 @@ def generateModDetailsFile():
     # Establish the mod's base directory
     modBaseDir = ("../"+modChoice)
 
+    # Get the title of the mod from the user
+    modTitle = gu.managedInputForced("Enter a title for the mod")
+
     # Create the base for the new mod details file
     detailsFileData = {}
-    detailsFileData['title'] = modChoice
-    detailsFileData['version'] = "v1.0.0"
-    detailsFileData['category'] = modChoice.upper()+" | SNC Requisitions"
+    detailsFileData['title'] = modTitle
+    detailsFileData['description'] = gu.managedInputForced("Enter a short description for the mod")
+    detailsFileData['author'] = gu.managedInputForced("Enter the mod's author")
+    detailsFileData['version'] = gu.managedInputForced("Enter the mod's current version (like v1.0.0)")
+    detailsFileData['category'] = (modTitle.upper()+" | SNC Requisitions")
     detailsFileData['files'] = []
 
     # Loop through the files in the mod folder

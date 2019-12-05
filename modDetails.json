@@ -1,6 +1,7 @@
 {
     "title": "Title of Your Mod",
     "description": "Short Description of Your Mod",
+    "author": "Your Callsign",
     "version": "v1.0.0",
     "category": "VARIOUS | SNC Requisitions",
     "files": [

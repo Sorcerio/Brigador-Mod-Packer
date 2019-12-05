@@ -95,6 +95,19 @@ def managedInput(query, exitPhrase):
         # Send inputted answer
         return answer
 
+# Asks for user input while waiting for some form of none empty input to be entered
+# query -> Question to ask the user for input on. Has ": " appended to it
+# blacklist -> Inputs that would qualify as a bad input. Has a default value
+def managedInputForced(query, blacklist = [None, ""]):
+    # Enter the input loop
+    answer = None
+    while(answer in blacklist):
+        # Ask user for input
+        answer = input(query+": ").strip()
+
+    # Return the answer
+    return answer
+
 # Asks for user input of a number while watching for an exit phrase that if entered.
 # Returns a 'None' object if canceled.
 # query -> Question to ask the user for input on. Has ": " appended to it
