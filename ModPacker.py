@@ -142,6 +142,13 @@ def utilitiesMenuOptions(choice):
     if choice == "0":
         # Show menu to generate a mod details file
         generateModDetailsFile()
+    elif choice == "1":
+        # Recompile currently selected mods
+        # Package the mods
+        packageMods()
+
+        # Compile the mods
+        compileGlobalJson()
 
 # Functions
 # Makes a backup of the global json file if one does not exist yet
@@ -421,7 +428,7 @@ def createSettingsFile(force = False):
 # Handles and shows the utilities menu
 def utilitiesMenu():
     # Show the utilities menu
-    choices = ["Generate Mod Details for Mod"]
+    choices = ["Generate a Mod Details file", "Recompile Selected Mods"]
     gu.textMenu("Utilities", choices, "Back", utilitiesMenuOptions)
 
 # Generates a mod details file for the provided information
