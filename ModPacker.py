@@ -121,7 +121,7 @@ def modSelectionOptions(choice):
 
     # Make sure the choice is within bounds
     choiceInt = int(choice)
-    if choiceInt > 0 and choiceInt <= (len(MODS_AVAILABLE)-2):
+    if choiceInt >= 0 and choiceInt <= (len(MODS_AVAILABLE)-1):
         # Pull the mod file
         modFile = MODS_AVAILABLE[choiceInt]
 
