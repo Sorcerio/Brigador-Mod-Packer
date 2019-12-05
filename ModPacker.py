@@ -18,6 +18,7 @@ GLOBAL_DIR = ("../../data/"+GLOBAL_FILE)
 GLOBAL_JSON = {}
 MODS_AVAILABLE = []
 MODS_SELECTED = []
+MODS_CHANGED = False
 ARCH_MECH = "Mech"
 ARCH_PILOT = "Pilot"
 ARCH_WEAPON = "Weapon"
@@ -61,20 +62,25 @@ def main():
 def mainMenuOptions(choice):
     # Mark globals
     global MODS_SELECTED
+    global MODS_CHANGED
     global SETTINGS
 
     # Decide what action to take
-    # TODO: Add a check to see if the compiler needs to be run or if mods are already compiled from a previous start
     if choice == "0":
         # Mod selection menu
         modSelectMenu()
     elif choice == "1":
         # Play with selected mods
-        # Package the mods
-        packageMods()
+        # Check if the mods need to be recompiled
+        if MODS_CHANGED:
+            # Package the mods
+            packageMods()
 
-        # Compile the mods
-        compileGlobalJson()
+            # Compile the mods
+            compileGlobalJson()
+        else:
+            # Report mods ready
+            print("\nAll selected mods seem to be compiled.\nUse 'Utilities > Recompile Mods' if a problem occurs.")
 
         # Start Brigador
         startBrigador()
@@ -107,6 +113,7 @@ def modSelectionOptions(choice):
     # Mark globals
     global MODS_AVAILABLE
     global MODS_SELECTED
+    global MODS_CHANGED
     global SETTINGS
     global SETTINGS_FILE
 
@@ -125,6 +132,9 @@ def modSelectionOptions(choice):
             # Mod is not in the list, add it
             SETTINGS['Mods'].append(modFile)
             MODS_SELECTED.append(modFile)
+
+        # Note mods as changed
+        MODS_CHANGED = True
 
 # Triggers for the utilities menu's options
 def utilitiesMenuOptions(choice):
@@ -377,6 +387,7 @@ def startBrigador():
         exit()
 
 # Populates the selected mods in the settings file
+# NOTE: This does NOT mark the mods as changed in MODS_CHANGED, so be aware if using this function in a place where this matters!
 def populateModsFromSettings():
     # Mark global
     global SETTINGS
