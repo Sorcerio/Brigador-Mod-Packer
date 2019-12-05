@@ -302,26 +302,16 @@ def addModToGlobal(data, path, extras = None):
     archetype = getFileArchetype(data)
 
     # Check what kind of archetyp was found
-    # TODO: For each, check if the item should be avalible to players!
-    if archetype == ARCH_MECH:
+    if archetype == ARCH_MECH and extras['forPlayer']:
         # Look for mod packer entry
         hasCategory = False
-        categoryIndex = -1
-        tick = 0
         for item in GLOBAL_JSON['mechs']:
             if item['name'] == extras['category']:
                 hasCategory = True
-                categoryIndex = tick-1
                 break
 
-            # Iterate
-            tick += 1
-        
         # Add category if needed
         if not hasCategory:
-            # Get index that will be added
-            categoryIndex = len(GLOBAL_JSON['mechs'])
-
             # Add to category
             GLOBAL_JSON['mechs'].append({'name' : extras['category'], 'list' : []})
 
@@ -330,10 +320,10 @@ def addModToGlobal(data, path, extras = None):
             if category['name'] == extras['category']:
                 category['list'].append(pathToStandard(path))
                 break
-    elif archetype == ARCH_PILOT:
+    elif archetype == ARCH_PILOT and extras['forPlayer']:
         # Append to Pilots
         GLOBAL_JSON['pilots'].append(pathToStandard(path))
-    elif archetype == ARCH_WEAPON:
+    elif archetype == ARCH_WEAPON and extras['forPlayer']:
         # Decide weapon category based on title
         if "aux" in path:
             GLOBAL_JSON['aux_weapons'].append(pathToStandard(path))
