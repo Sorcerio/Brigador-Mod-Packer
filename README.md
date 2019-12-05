@@ -27,3 +27,32 @@ Currently All Vehicles, All Weapons, Pilots, Specials, Maps, and all linked file
 
 ## Where to Download Mods
 The [Brigador Discord Channel](https://discord.gg/z4Egp3A) is currently the primary place for downloading mods.
+
+## For the Modders
+### The modDetails.json File
+The `modDetails.json` file is a data file that the Brigador Mod Packer can interact with that provides more information to both the user and the mod packer itself when handling your mod. While any mod _without_ a `modDetails.json` file (refered to here as a Legacy Mod), will still work within the Brigador Mod Packer your mod will miss out on some benefits.
+
+### Benefits of the modDetails.json File
+The benefits of including a `modDetails.json` file include:
+* A custom title for your mod within in the mod selection menu.
+* A custom description for your mod within the mod selection menu.
+* The inclusion of the author's (your) name/alias in the mod selection menu.
+* A custom vehicle category for your mod within Brigador.
+* You can specify which files should be loaded by the Mod Packer and which should not.
+* You can specify if an included file (like a Vehicle or a Weapon) should be avalible to the player.
+* Your mod won't be listed a Legacy Mod in the Mod Selection menu.
+
+### Creating Your Own  modDetails.json File
+Luckily, making a `modDetails.json` file is easy. As such a template file been included in this repository. Additionaly, by adding your mod to the `assets/_modkit/` folder and going to `Utilities > Generate a Mod Details file` in the Brigador Mod Packer you can go through a guided process to create one. Once the file is created, it can loaded into any text editor and modified further.
+
+### The modDetails.json File's Attributes
+* `title`: The title that your mod should be displayed with in the Mod Selection Menu.
+* `description`: The description that your mod should be displayed with in the Mod Selection Menu.
+* `author`: The author that your mod should be displayed with in the Mod Selection Menu.
+* `version`: The author that your mod should be displayed with in the Mod Selection Menu. Standard format is `v1.0.0`.
+* `category`: The category that any Vehicles in your mod should be listed under in game. Standard format is `YOUR_MODS_NAME | SNC Requisitions` to fit the style of the Vanilla categories, but can be almost anything.
+* `files`: A list of the files that should be included when compiling your mod into Brigador.
+    * `path`: The path (starting with `assets/_modkit/`) that Brigador can find your `.json` file at.
+    * `forPlayer`: A boolean stating if the player should be able to equip the accompanying `path`'s contents from the in game Requisitions menu. `True` would indicate the player can purchase and equip the item.
+
+Do not include `"` in any of these fields unless it is escaped as such `\"`.
