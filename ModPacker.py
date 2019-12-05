@@ -25,7 +25,8 @@ ARCH_WEAPON = "Weapon"
 ARCH_MISSION = "Misson"
 ARCH_OVERMAP = "Overmap"
 
-# Main Thread
+## Main Thread
+# The main, starting, execution of the Brigador Mod Packer
 def main():
     # Mark globals
     global MODS_AVAILABLE
@@ -57,7 +58,7 @@ def main():
     mainOptions = ["Select Mods", "Play with Selected Mods", "Play without Mods", "Utilities", "Options"]
     gu.textMenu("Brigador Mod Packer", mainOptions, "Quit", mainMenuOptions)
 
-# Menu Triggers
+## Menu Triggers
 # Triggers for the main menu's options
 def mainMenuOptions(choice):
     # Mark globals
@@ -166,20 +167,8 @@ def settingsMenuOptions(choice):
         with open(SETTINGS_FILE, "w") as sFile:
             json.dump(SETTINGS, sFile)
 
-# Functions
-# Makes a backup of the global json file if one does not exist yet
-def backupGlobalJson():
-    # Check if a global json backup already exists
-    if not os.path.isfile(GLOBAL_DIR+BACKUP_EXT):
-        # Open the read and write global json files
-        with open(GLOBAL_DIR, "r", encoding = "Latin-1") as readFile:
-            with open(GLOBAL_DIR+".BAK", "w", encoding = "Latin-1") as writeFile:
-                writeFile.write(readFile.read())
-
-        # Report that a backup has been made
-        print("Made a backup of the "+GLOBAL_FILE+" file.")
-
-# Populates and opens the mod selection menu
+## Menu Functions
+# Handles and shows the mod selection menu
 def modSelectMenu():
     # Mark globals
     global MOD_INFO_FILE
@@ -221,6 +210,59 @@ def modSelectMenu():
         print("\n"+str(modAddedCount)+" mod has been selected.")
     else:
         print("\n"+str(modAddedCount)+" mods have been selected.")
+
+# Handles and shows the utilities menu
+def utilitiesMenu():
+    # Show the utilities menu
+    choices = ["Generate a Mod Details file", "Recompile Selected Mods"]
+    gu.textMenu("Utilities", choices, "Back", utilitiesMenuOptions)
+
+# Handles and shows the settings menu
+def settingsMenu():
+    # Present the settings menu
+    choices = ["Change if Mod Packer remains open when Brigador starts"]
+    gu.textMenu("Settings", choices, "Back", settingsMenuOptions)
+
+## Execution Functions
+# Compiles the current global json file so the mods it contains can be used in game
+def compileGlobalJson():
+    # Report that the compiler will open
+    print("\nOpening the compiler. Please wait for it to complete, this may take a while.")
+
+    # Trigger the compiler process
+    subprocess.call(["../../../brigador.exe", "-genpack"], cwd=r"../../../")
+
+    # Report that hte compiler has closed
+    print("\nCompiler has finished.")
+
+# Starts the Brigador game
+def startBrigador():
+    # Mark globals
+    global MODS_SELECTED
+    global SETTINGS
+
+    # Mark that the game is opening
+    print("\nOpening Brigador with "+str(len(MODS_SELECTED))+" mods.")
+
+    # Start the Brigador exe
+    subprocess.call(["../../../brigador.exe"], cwd=r"../../../")
+
+    # Check if the python should close
+    if(not SETTINGS['Settings']['remainOpen']):
+        exit()
+
+## Utility Functions
+# Makes a backup of the global json file if one does not exist yet
+def backupGlobalJson():
+    # Check if a global json backup already exists
+    if not os.path.isfile(GLOBAL_DIR+BACKUP_EXT):
+        # Open the read and write global json files
+        with open(GLOBAL_DIR, "r", encoding = "Latin-1") as readFile:
+            with open(GLOBAL_DIR+".BAK", "w", encoding = "Latin-1") as writeFile:
+                writeFile.write(readFile.read())
+
+        # Report that a backup has been made
+        print("Made a backup of the "+GLOBAL_FILE+" file.")
 
 # Packages the selected mods into the global.json file
 def packageMods():
@@ -382,33 +424,6 @@ def pathToStandard(path):
     # Replace and send
     return path.replace("../","assets/_modkit/")
 
-# Compiles the current global json file so the mods it contains can be used in game
-def compileGlobalJson():
-    # Report that the compiler will open
-    print("\nOpening the compiler. Please wait for it to complete, this may take a while.")
-
-    # Trigger the compiler process
-    subprocess.call(["../../../brigador.exe", "-genpack"], cwd=r"../../../")
-
-    # Report that hte compiler has closed
-    print("\nCompiler has finished.")
-
-# Starts the Brigador game
-def startBrigador():
-    # Mark globals
-    global MODS_SELECTED
-    global SETTINGS
-
-    # Mark that the game is opening
-    print("\nOpening Brigador with "+str(len(MODS_SELECTED))+" mods.")
-
-    # Start the Brigador exe
-    subprocess.call(["../../../brigador.exe"], cwd=r"../../../")
-
-    # Check if the python should close
-    if(not SETTINGS['Settings']['remainOpen']):
-        exit()
-
 # Populates the selected mods in the settings file
 # NOTE: This does NOT mark the mods as changed in MODS_CHANGED, so be aware if using this function in a place where this matters!
 def populateModsFromSettings():
@@ -440,12 +455,6 @@ def createSettingsFile(force = False):
         with open(SETTINGS_FILE, "w+") as settingsFile:
             # Dump the settings string to the file
             json.dump(settingsString, settingsFile)
-
-# Handles and shows the utilities menu
-def utilitiesMenu():
-    # Show the utilities menu
-    choices = ["Generate a Mod Details file", "Recompile Selected Mods"]
-    gu.textMenu("Utilities", choices, "Back", utilitiesMenuOptions)
 
 # Generates a mod details file for the provided information
 def generateModDetailsFile():
@@ -571,12 +580,6 @@ def getFileArchetype(data):
 
     # Send the archetype
     return archetype
-
-# Caller for the settings menu
-def settingsMenu():
-    # Present the settings menu
-    choices = ["Change if Mod Packer remains open when Brigador starts"]
-    gu.textMenu("Settings", choices, "Back", settingsMenuOptions)
 
 # Begin Operation
 if __name__ == '__main__':
