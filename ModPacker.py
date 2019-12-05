@@ -150,9 +150,10 @@ def modSelectMenu():
 
     # Create the mod choice list
     modDisplay = {}
+    descBuffer = "\n\t> "
     for mod in MODS_AVAILABLE:
         # Determine if the mod has a details file
-        title = mod
+        title = (mod+descBuffer+"Legacy mod. Ask the mod author for Mod Details support.")
         detailsPath = ("../"+mod+"/"+MOD_INFO_FILE)
         if os.path.exists(detailsPath):
             # Fetch extra details from the info file
@@ -160,14 +161,8 @@ def modSelectMenu():
                 # Get the mod information from the mod details file
                 modInfo = json.load(modInfoFile)
 
-                # Decide plurality
-                modFileCount = len(modInfo['files'])
-                filesWord = "files"
-                if modFileCount == 1:
-                    filesWord = "file"
-
                 # Use mod information to make a title
-                title = (modInfo['title']+" ("+modInfo['version']+", "+str(modFileCount)+" "+filesWord+")")
+                title = (modInfo['title']+" ("+modInfo['version']+", "+modInfo['author']+")"+descBuffer+modInfo['description'])
 
         # Check if currently selected
         if mod in MODS_SELECTED:
