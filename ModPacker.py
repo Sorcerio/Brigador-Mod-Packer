@@ -106,7 +106,8 @@ def mainMenuOptions(choice):
         utilitiesMenu()
     elif choice == "4":
         # Options menu
-        print("Options TBD")
+        # Open the settings menu
+        settingsMenu()
 
 # Triggers for the mod selection menu's options
 def modSelectionOptions(choice):
@@ -149,6 +150,21 @@ def utilitiesMenuOptions(choice):
 
         # Compile the mods
         compileGlobalJson()
+
+# Triggers for the setting menu's options
+def settingsMenuOptions(choice):
+    # Decide what action to take
+    if choice == "0":
+        # Change if packer closes on game start
+        # Ask the user if the game should close
+        shouldClose = gu.askUserYesNo("Should the Brigador Mod Packer close when Brigador is started?", True)
+
+        # Alter the settings in memory
+        SETTINGS['Settings']['remainOpen'] = (not shouldClose)
+
+        # Save the settings
+        with open(SETTINGS_FILE, "w") as sFile:
+            json.dump(SETTINGS, sFile)
 
 # Functions
 # Makes a backup of the global json file if one does not exist yet
@@ -555,6 +571,12 @@ def getFileArchetype(data):
 
     # Send the archetype
     return archetype
+
+# Caller for the settings menu
+def settingsMenu():
+    # Present the settings menu
+    choices = ["Change if Mod Packer remains open when Brigador starts"]
+    gu.textMenu("Settings", choices, "Back", settingsMenuOptions)
 
 # Begin Operation
 if __name__ == '__main__':
