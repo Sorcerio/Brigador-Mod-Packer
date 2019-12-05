@@ -287,77 +287,72 @@ def addModToGlobal(data, path, extras = None):
     # Mark globals
     global CATEGORY_NAME
     global GLOBAL_JSON
+    global ARCH_MECH
+    global ARCH_MISSION
+    global ARCH_OVERMAP
+    global ARCH_PILOT
+    global ARCH_WEAPON
 
     # Check if extras are none
     if extras == None:
         # Load the defaults
         extras = {"forPlayer": True, "category": CATEGORY_NAME}
 
-    # Watch out for archetype failures
+    # Get the data's archetype
+    archetype = getFileArchetype(data)
+
+    # Check what kind of archetyp was found
     # TODO: For each, check if the item should be avalible to players!
-    try:
-        # Check if the data is a Mech
-        if data['archetype'] == "MECH":
-            # Look for mod packer entry
-            hasCategory = False
-            categoryIndex = -1
-            tick = 0
-            for item in GLOBAL_JSON['mechs']:
-                if item['name'] == extras['category']:
-                    hasCategory = True
-                    categoryIndex = tick-1
-                    break
+    if archetype == ARCH_MECH:
+        # Look for mod packer entry
+        hasCategory = False
+        categoryIndex = -1
+        tick = 0
+        for item in GLOBAL_JSON['mechs']:
+            if item['name'] == extras['category']:
+                hasCategory = True
+                categoryIndex = tick-1
+                break
 
-                # Iterate
-                tick += 1
-            
-            # Add category if needed
-            if not hasCategory:
-                # Get index that will be added
-                categoryIndex = len(GLOBAL_JSON['mechs'])
+            # Iterate
+            tick += 1
+        
+        # Add category if needed
+        if not hasCategory:
+            # Get index that will be added
+            categoryIndex = len(GLOBAL_JSON['mechs'])
 
-                # Add to category
-                GLOBAL_JSON['mechs'].append({'name' : extras['category'], 'list' : []})
+            # Add to category
+            GLOBAL_JSON['mechs'].append({'name' : extras['category'], 'list' : []})
 
-            # Add Mod link to category
-            for category in GLOBAL_JSON['mechs']:
-                if category['name'] == extras['category']:
-                    category['list'].append(pathToStandard(path))
-                    break
-
-        # Check if the data is a Pilot
-        elif data['archetype'] == "PILOT":
-            # Append to Pilots
-            GLOBAL_JSON['pilots'].append(pathToStandard(path))
-
-        # Check if the data is a weapon
-        elif "_WEAPON" in data['archetype']:
-            # Decide category based on title
-            if "aux" in path:
-                GLOBAL_JSON['aux_weapons'].append(pathToStandard(path))
-            elif "main" in path:
-                GLOBAL_JSON['main_weapons'].append(pathToStandard(path))
-            elif "turret" in path:
-                GLOBAL_JSON['turret_weapons'].append(pathToStandard(path))
-            elif "heavy" in path:
-                GLOBAL_JSON['heavy_weapons'].append(pathToStandard(path))
-            elif "small" in path:
-                GLOBAL_JSON['small_weapons'].append(pathToStandard(path))
-            elif "special" in path:
-                GLOBAL_JSON['special_abilities'].append(pathToStandard(path))
-
-        # Check if the data is a mission
-        elif "MISSION" in data['archetype']:
-            # Append to Missions
-            GLOBAL_JSON['missions'].append(pathToStandard(path))
-
-        # Check if the data is an overmap
-        elif "OVERMAP" in data['archetype']:
-            # Append to Overmap Paths
-            GLOBAL_JSON['overmap_paths'].append(pathToStandard(path))
-
-    except KeyError as e:
-        print(path+" is not an archetype file, ignoring")
+        # Add Mod link to category
+        for category in GLOBAL_JSON['mechs']:
+            if category['name'] == extras['category']:
+                category['list'].append(pathToStandard(path))
+                break
+    elif archetype == ARCH_PILOT:
+        # Append to Pilots
+        GLOBAL_JSON['pilots'].append(pathToStandard(path))
+    elif archetype == ARCH_WEAPON:
+        # Decide weapon category based on title
+        if "aux" in path:
+            GLOBAL_JSON['aux_weapons'].append(pathToStandard(path))
+        elif "main" in path:
+            GLOBAL_JSON['main_weapons'].append(pathToStandard(path))
+        elif "turret" in path:
+            GLOBAL_JSON['turret_weapons'].append(pathToStandard(path))
+        elif "heavy" in path:
+            GLOBAL_JSON['heavy_weapons'].append(pathToStandard(path))
+        elif "small" in path:
+            GLOBAL_JSON['small_weapons'].append(pathToStandard(path))
+        elif "special" in path:
+            GLOBAL_JSON['special_abilities'].append(pathToStandard(path))
+    elif archetype == ARCH_MISSION:
+        # Append to Missions
+        GLOBAL_JSON['missions'].append(pathToStandard(path))
+    elif archetype == ARCH_OVERMAP:
+        # Append to Overmap Paths
+        GLOBAL_JSON['overmap_paths'].append(pathToStandard(path))
 
 # Converts a local path from the mod packer folder to the Brigador standard
 def pathToStandard(path):
